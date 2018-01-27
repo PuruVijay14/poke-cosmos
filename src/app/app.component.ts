@@ -1,47 +1,43 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
-import { NavigationEnd } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
 
 @Component({
   selector: 'poke-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnChanges {
-  /**
-   * Activated app route
-   * @type ActivatedRoute
-   */
-  public aRroute: ActivatedRoute;
+export class AppComponent implements OnInit {
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private titleService: Title
+  ) { }
 
-  /**
-   * Title of the app
-   */
-  title = 'Welcome to Poké-Cosmos';
+  title = 'Welcome to Pok&eacute;cosmos';
 
-  /**
-   * The router
-   * @type Router
-   */
-  public router: Router;
-
-  ngOnChanges() {
-    this.updateTitle();
+  ngOnInit() {
+    this.router.events
+      .filter((event) => event instanceof NavigationEnd)
+      .map(() => this.activatedRoute)
+      .map((route) => {
+        while (route.firstChild) { route = route.firstChild; }
+        return route;
+      })
+      .filter((route) => route.outlet === 'primary')
+      .mergeMap((route) => route.data)
+      .subscribe((event) => {
+        this.titleService.setTitle(event['title']);
+        this.title = event['title'];
+      });
   }
 
   /**
    * Changes the title on route change
    * @returns void
    */
-  updateTitle(): void {
-    this.router.events
-      .filter(event => event instanceof NavigationEnd)
-      .map(() => this.aRroute)
-      .map(route => {
-        this.title = route.data.title;
-      });
-  }
+
 }

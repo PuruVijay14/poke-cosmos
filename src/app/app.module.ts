@@ -10,11 +10,15 @@ import { environment } from '../environments/environment';
 
 import { MaterialModule } from './material-module/material-module.module';
 import { IndexComponent } from './index/index.component';
+import { RegisterComponent } from './register/register.component';
+import { EscapeHtmlPipe } from './keep-html.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-    IndexComponent
+    IndexComponent,
+    RegisterComponent,
+    EscapeHtmlPipe
   ],
   imports: [
     BrowserModule,
